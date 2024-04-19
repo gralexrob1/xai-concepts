@@ -1,0 +1,14 @@
+name: xai-concepts
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pytorch
+  - pytorch-cuda=12.1
+  - torchaudio
+  - torchvision
+  - pandas
+  - ipython=8.18.1
+  - tqdm
+  - matplotlib
