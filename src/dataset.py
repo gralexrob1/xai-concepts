@@ -7,6 +7,7 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 
 torch.manual_seed(2024)
+AVERAGE_IMAGE_VALUE = 115
 
 LABEL_ID_DIC = {
     "n01440764": 0,
