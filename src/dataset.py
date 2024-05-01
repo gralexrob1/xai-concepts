@@ -6,6 +6,8 @@ from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
 
+torch.manual_seed(2024)
+
 LABEL_ID_DIC = {
     "n01440764": 0,
     "n02102040": 1,
