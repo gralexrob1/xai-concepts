@@ -4,9 +4,7 @@ import pandas as pd
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
-
-DATA_PATH = "../imagenette"
-DATA_SUMMARY = "noisy_imagenette.csv"
+from torchvision import transforms
 
 LABEL_ID_DIC = {
     "n01440764": 0,
@@ -20,7 +18,6 @@ LABEL_ID_DIC = {
     "n03445777": 8,
     "n03888257": 9,
 }
-
 LABEL_NAME_DIC = {
     0: "Tench",
     1: "English springer",
@@ -34,10 +31,13 @@ LABEL_NAME_DIC = {
     9: "Parachute",
 }
 
+TRANSFORM = transforms.Compose([transforms.CenterCrop(320), transforms.ToTensor()])
+
 
 class ImageDataset(Dataset):
-    def __init__(self, csv_file, transform=None, val=False):
-        data_summary = pd.read_csv(csv_file)
+    def __init__(self, data_folder, data_file, transform=None, val=False):
+        self.data_folder = data_folder
+        data_summary = pd.read_csv(osp.join(data_folder, data_file))
         self.data_summary = data_summary[data_summary.is_valid == val].reset_index()
         self.transform = transform
 
@@ -49,7 +49,7 @@ class ImageDataset(Dataset):
             idx = idx.tolist()
 
         image_file = self.data_summary.loc[idx, "path"]
-        image = Image.open(osp.join(DATA_PATH, image_file)).convert("RGB")
+        image = Image.open(osp.join(self.data_folder, image_file)).convert("RGB")
 
         label = self.data_summary.loc[idx, "noisy_labels_0"]
         one_hot_label = torch.zeros(len(LABEL_ID_DIC.keys()))
