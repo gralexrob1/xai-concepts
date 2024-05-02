@@ -7,6 +7,7 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 
 torch.manual_seed(2024)
+
 AVERAGE_IMAGE_VALUE = 115
 
 LABEL_ID_DIC = {
@@ -21,6 +22,8 @@ LABEL_ID_DIC = {
     "n03445777": 8,
     "n03888257": 9,
 }
+LABEL_ID_INV_DIC = {v: k for k, v in LABEL_ID_DIC.items()}
+
 LABEL_NAME_DIC = {
     0: "Tench",
     1: "English springer",
@@ -33,15 +36,16 @@ LABEL_NAME_DIC = {
     8: "Golf ball",
     9: "Parachute",
 }
+LABEL_NAME_INV_DIC = {v: k for k, v in LABEL_NAME_DIC.items()}
 
 TRANSFORM = transforms.Compose([transforms.CenterCrop(320), transforms.ToTensor()])
 
 
 class ImageDataset(Dataset):
-    def __init__(self, data_folder, data_file, transform=None, val=False):
-        self.data_folder = data_folder
-        data_summary = pd.read_csv(osp.join(data_folder, data_file))
-        self.data_summary = data_summary[data_summary.is_valid == val].reset_index()
+    def __init__(self, data_dir, data_file, transform=None, val=False):
+        self.data_dir = data_dir
+        data_summary = pd.read_csv(osp.join(data_dir, data_file))
+        self.data_summary = data_summary[data_summary.is_valid == val].reset_index(drop=True)
         self.transform = transform
 
     def __len__(self):
@@ -52,7 +56,7 @@ class ImageDataset(Dataset):
             idx = idx.tolist()
 
         image_file = self.data_summary.loc[idx, "path"]
-        image = Image.open(osp.join(self.data_folder, image_file)).convert("RGB")
+        image = Image.open(osp.join(self.data_dir, image_file)).convert("RGB")
 
         label = self.data_summary.loc[idx, "noisy_labels_0"]
         one_hot_label = torch.zeros(len(LABEL_ID_DIC.keys()))
